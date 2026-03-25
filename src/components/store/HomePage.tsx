@@ -98,26 +98,26 @@ export default function HomePage({ initialSettings }: HomePageProps) {
         </div>
 
         {/* Floating Icons */}
-        <div className="absolute inset-0 z-10 hidden lg:block pointer-events-none">
+        <div className="absolute inset-0 z-10 pointer-events-none">
           {/* Main Floating Icons */}
-          <motion.div animate={floatingAnimation(0)} className="absolute top-[18%] left-[12%] p-5 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl">
-            <Armchair className="w-10 h-10 text-primary" strokeWidth={1.5} />
-            <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-              <Sparkles className="w-3 h-3 text-white" />
+          <motion.div animate={floatingAnimation(0)} className="absolute top-[15%] left-[5%] lg:top-[18%] lg:left-[12%] p-3 lg:p-5 bg-white/5 backdrop-blur-xl rounded-2xl lg:rounded-3xl border border-white/10 shadow-2xl scale-75 lg:scale-100">
+            <Armchair className="w-8 h-8 lg:w-10 lg:h-10 text-primary" strokeWidth={1.5} />
+            <div className="absolute -bottom-1 -right-1 lg:-bottom-2 lg:-right-2 w-5 h-5 lg:w-6 lg:h-6 bg-primary rounded-full flex items-center justify-center">
+              <Sparkles className="w-2 h-2 lg:w-3 lg:h-3 text-white" />
             </div>
           </motion.div>
           
-          <motion.div animate={floatingAnimation(1.2)} className="absolute top-[30%] right-[8%] p-6 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl">
-            <Layout className="w-12 h-12 text-primary" strokeWidth={1} />
-            <p className="text-[8px] font-bold text-white mt-1 uppercase tracking-tighter">Aluminum</p>
+          <motion.div animate={floatingAnimation(1.2)} className="absolute top-[25%] right-[2%] lg:top-[30%] lg:right-[8%] p-4 lg:p-6 bg-white/5 backdrop-blur-xl rounded-2xl lg:rounded-3xl border border-white/10 shadow-2xl scale-75 lg:scale-100">
+            <Layout className="w-10 h-10 lg:w-12 lg:h-12 text-primary" strokeWidth={1} />
+            <p className="text-[6px] lg:text-[8px] font-bold text-white mt-1 uppercase tracking-tighter">Aluminum</p>
           </motion.div>
           
-          <motion.div animate={floatingAnimation(0.6)} className="absolute bottom-[28%] left-[15%] p-5 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl">
-            <Home className="w-10 h-10 text-primary" strokeWidth={1.5} />
+          <motion.div animate={floatingAnimation(0.6)} className="absolute bottom-[20%] left-[8%] lg:bottom-[28%] lg:left-[15%] p-3 lg:p-5 bg-white/5 backdrop-blur-xl rounded-2xl lg:rounded-3xl border border-white/10 shadow-2xl scale-75 lg:scale-100">
+            <Home className="w-8 h-8 lg:w-10 lg:h-10 text-primary" strokeWidth={1.5} />
           </motion.div>
           
-          <motion.div animate={floatingAnimation(1.8)} className="absolute bottom-[35%] right-[18%] p-5 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl">
-            <Sun className="w-10 h-10 text-primary" strokeWidth={1.5} />
+          <motion.div animate={floatingAnimation(1.8)} className="absolute bottom-[25%] right-[10%] lg:bottom-[35%] lg:right-[18%] p-3 lg:p-5 bg-white/5 backdrop-blur-xl rounded-2xl lg:rounded-3xl border border-white/10 shadow-2xl scale-75 lg:scale-100">
+            <Sun className="w-8 h-8 lg:w-10 lg:h-10 text-primary" strokeWidth={1.5} />
           </motion.div>
 
           {/* Smaller Particles */}
