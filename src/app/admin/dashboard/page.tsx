@@ -4,10 +4,10 @@ import { motion } from "framer-motion";
 import { Package, ShoppingBag, Users, TrendingUp, IndianRupee, ArrowUpRight } from "lucide-react";
 
 const STATS = [
-  { label: "Total Revenue", value: "₹24,50,000", change: "+12%", icon: IndianRupee, color: "text-[#D4AF37]", bg: "bg-[#D4AF37]/10" },
-  { label: "Total Orders", value: "156", change: "+8%", icon: ShoppingBag, color: "text-[#735c00]", bg: "bg-[#735c00]/10" },
-  { label: "Total Products", value: "48", change: "+3", icon: Package, color: "text-[#442a22]", bg: "bg-[#442a22]/10" },
-  { label: "Total Users", value: "1,240", change: "+24%", icon: Users, color: "text-[#5e604d]", bg: "bg-[#5e604d]/10" },
+  { label: "Total Revenue", value: "₹24,50,000", change: "+12%", icon: IndianRupee, color: "text-accent", bg: "bg-accent/10" },
+  { label: "Total Orders", value: "156", change: "+8%", icon: ShoppingBag, color: "text-primary", bg: "bg-primary/10" },
+  { label: "Total Products", value: "48", change: "+3", icon: Package, color: "text-white", bg: "bg-white/10" },
+  { label: "Total Users", value: "1,240", change: "+24%", icon: Users, color: "text-secondary", bg: "bg-secondary/10" },
 ];
 
 const RECENT_ORDERS = [
@@ -29,8 +29,8 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-serif text-3xl text-[#442a22]">Dashboard</h1>
-        <p className="font-sans text-sm text-[#5e604d] mt-1">Welcome to Shekhawati Furniture House Admin</p>
+        <h1 className="font-serif text-3xl text-primary font-bold">Dashboard</h1>
+        <p className="font-sans text-sm text-secondary mt-1">Welcome to Shekhawati Furniture House Admin</p>
       </div>
 
       {/* Stats Grid */}
@@ -41,7 +41,7 @@ export default function AdminDashboardPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="bg-[#f5f5dc] p-6 rounded-md space-y-3"
+            className="bg-surface-low p-6 rounded-md space-y-3 border border-white/5"
           >
             <div className="flex items-center justify-between">
               <div className={`p-2 rounded-md ${stat.bg}`}>
@@ -52,20 +52,20 @@ export default function AdminDashboardPage() {
               </span>
             </div>
             <div>
-              <p className="font-serif text-2xl text-[#442a22]">{stat.value}</p>
-              <p className="font-sans text-xs text-[#5e604d] mt-1">{stat.label}</p>
+              <p className="font-serif text-2xl text-white font-bold">{stat.value}</p>
+              <p className="font-sans text-xs text-secondary mt-1">{stat.label}</p>
             </div>
           </motion.div>
         ))}
       </div>
 
       {/* Revenue Chart Placeholder */}
-      <div className="bg-[#f5f5dc] p-8 rounded-md">
+      <div className="bg-surface-low p-8 rounded-md border border-white/5">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-serif text-xl text-[#442a22]">Revenue Overview</h2>
+          <h2 className="font-serif text-xl text-white font-bold">Revenue Overview</h2>
           <div className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-[#D4AF37]" strokeWidth={1.5} />
-            <span className="font-sans text-sm text-[#735c00] font-semibold">+12% this month</span>
+            <TrendingUp className="w-5 h-5 text-accent" strokeWidth={1.5} />
+            <span className="font-sans text-sm text-primary font-bold">+12% this month</span>
           </div>
         </div>
         <div className="h-48 flex items-end gap-2">
@@ -75,26 +75,26 @@ export default function AdminDashboardPage() {
               initial={{ height: 0 }}
               animate={{ height: `${h}%` }}
               transition={{ delay: i * 0.05, duration: 0.5 }}
-              className="flex-1 bg-gradient-to-t from-[#442a22] to-[#5d4037] rounded-t-sm"
+              className="flex-1 bg-linear-to-t from-primary to-accent rounded-t-sm"
             />
           ))}
         </div>
         <div className="flex justify-between mt-2">
           {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((m) => (
-            <span key={m} className="font-sans text-[10px] text-[#827470] flex-1 text-center">{m}</span>
+            <span key={m} className="font-sans text-[10px] text-secondary flex-1 text-center font-bold">{m}</span>
           ))}
         </div>
       </div>
 
       {/* Recent Orders */}
-      <div className="bg-[#f5f5dc] rounded-md overflow-hidden">
-        <div className="p-6 border-b border-[#d4c3be]/20">
-          <h2 className="font-serif text-xl text-[#442a22]">Recent Orders</h2>
+      <div className="bg-surface-low rounded-md overflow-hidden border border-white/5">
+        <div className="p-6 border-b border-white/5">
+          <h2 className="font-serif text-xl text-white font-bold">Recent Orders</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="text-left font-sans text-xs text-[#5e604d] uppercase tracking-wider">
+              <tr className="text-left font-sans text-xs text-secondary uppercase tracking-wider">
                 <th className="px-6 py-3">Order ID</th>
                 <th className="px-6 py-3">Customer</th>
                 <th className="px-6 py-3">Amount</th>
@@ -104,14 +104,14 @@ export default function AdminDashboardPage() {
             </thead>
             <tbody>
               {RECENT_ORDERS.map((order) => (
-                <tr key={order.id} className="border-t border-[#d4c3be]/10 font-sans text-sm">
-                  <td className="px-6 py-4 text-[#442a22] font-semibold">{order.id}</td>
-                  <td className="px-6 py-4 text-[#1b1d0e]">{order.customer}</td>
-                  <td className="px-6 py-4 text-[#735c00] font-semibold">{order.amount}</td>
+                <tr key={order.id} className="border-t border-white/5 font-sans text-sm">
+                  <td className="px-6 py-4 text-primary font-bold">{order.id}</td>
+                  <td className="px-6 py-4 text-white">{order.customer}</td>
+                  <td className="px-6 py-4 text-accent font-bold">{order.amount}</td>
                   <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[order.status]}`}>{order.status}</span>
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${STATUS_COLORS[order.status]}`}>{order.status}</span>
                   </td>
-                  <td className="px-6 py-4 text-[#5e604d]">{order.date}</td>
+                  <td className="px-6 py-4 text-secondary">{order.date}</td>
                 </tr>
               ))}
             </tbody>

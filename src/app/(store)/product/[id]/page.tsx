@@ -39,7 +39,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     <div className="min-h-screen bg-white">
       <Navbar />
       
-      <main className="pt-28 pb-24">
+      <main className="pt-10 pb-24">
         {/* Breadcrumbs */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
           <nav className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-secondary">

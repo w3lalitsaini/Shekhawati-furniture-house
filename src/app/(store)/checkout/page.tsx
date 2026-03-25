@@ -16,7 +16,7 @@ export default function CheckoutPage() {
     return (
       <div className="min-h-screen bg-white">
         <Navbar />
-        <main className="pt-32 pb-24 text-center space-y-8">
+        <main className="pt-10 pb-24 text-center space-y-8">
           <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto">
             <ShieldCheck className="w-10 h-10 text-gray-200" />
           </div>

@@ -6,6 +6,8 @@ export interface IUser extends Document {
   password?: string;
   role: "user" | "admin";
   wishlist: mongoose.Types.ObjectId[];
+  resetPasswordOTP?: string;
+  resetPasswordOTPExpires?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,6 +19,8 @@ const UserSchema: Schema<IUser> = new Schema(
     password: { type: String, select: false },
     role: { type: String, enum: ["user", "admin"], default: "user" },
     wishlist: [{ type: Schema.Types.ObjectId, ref: "Product" }],
+    resetPasswordOTP: { type: String },
+    resetPasswordOTPExpires: { type: Date },
   },
   { timestamps: true }
 );

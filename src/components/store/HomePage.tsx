@@ -47,7 +47,7 @@ const BEST_SELLERS = [
 ];
 
 const floatingAnimation = (delay = 0) => ({
-  y: [0, -20, 0],
+  y: [0, -40, 0],
   rotate: [0, 5, -5, 0],
   transition: {
     duration: 5,
@@ -57,22 +57,44 @@ const floatingAnimation = (delay = 0) => ({
   },
 });
 
-export default function HomePage() {
+interface HomePageProps {
+  initialSettings: {
+    home: {
+      hero: {
+        title: string;
+        subtitle: string;
+        description: string;
+        primaryBtnText: string;
+        secondaryBtnText: string;
+        images: string[];
+      };
+    };
+    store: {
+      phone: string;
+      email: string;
+      address: string;
+    };
+  };
+}
+
+export default function HomePage({ initialSettings }: HomePageProps) {
   const containerRef = useRef(null);
+  const hero = initialSettings?.home?.hero;
+  const store = initialSettings?.store;
 
   return (
     <div className="bg-white overflow-x-hidden" ref={containerRef}>
       
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-black">
+      <section className="relative h-[600] flex items-center justify-center overflow-hidden bg-black">
         {/* Background Image */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 text-white">
           <img 
-            src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=1920" 
+            src={hero?.images[0] || "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=1920"} 
             alt="Luxury Interior" 
             className="w-full h-full object-cover opacity-50"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
         </div>
 
         {/* Floating Icons */}
@@ -90,7 +112,7 @@ export default function HomePage() {
             <p className="text-[8px] font-bold text-white mt-1 uppercase tracking-tighter">Aluminum</p>
           </motion.div>
           
-          <motion.div animate={floatingAnimation(0.6)} className="absolute bottom-[28%] left-[20%] p-5 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl">
+          <motion.div animate={floatingAnimation(0.6)} className="absolute bottom-[28%] left-[15%] p-5 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl">
             <Home className="w-10 h-10 text-primary" strokeWidth={1.5} />
           </motion.div>
           
@@ -112,37 +134,37 @@ export default function HomePage() {
         </div>
 
         {/* Content */}
-        <div className="relative z-20 max-w-7xl mx-auto px-4 text-center">
+        <div className="relative z-20 -top-20 text-center px-4 max-w-5xl mx-auto space-y-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="space-y-8"
+            className="space-y-6"
           >
-            <h1 className="font-serif text-5xl md:text-8xl text-white font-bold leading-tight tracking-tighter">
-              Premium Furniture & <br/>
-              <span className="text-primary italic">Aluminum Work</span>
+            <h1 className="font-serif text-4xl md:text-5xl lg:text-8xl font-bold tracking-tight leading-none text-white">
+              {hero?.title || "Premium Furniture & Aluminum Work"}
             </h1>
-            <p className="text-secondary text-lg md:text-xl font-medium tracking-[0.2em] uppercase max-w-3xl mx-auto">
-              Masterpieces crafted for modern living and architectural excellence
+            <p className="font-sans text-lg md:text-3xl text-gray-300 font-light tracking-wide max-w-2xl mx-auto italic">
+              {hero?.subtitle || "Elevate Your Living With Timeless Craft"}
             </p>
-            
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8">
-              <Link href="/products" className="group px-10 py-5 bg-primary text-white text-[10px] font-bold uppercase tracking-[0.3em] rounded-sm hover:bg-white hover:text-black transition-all shadow-2xl flex items-center gap-3">
-                Shop Collection <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link href="/custom" className="px-10 py-5 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold uppercase tracking-[0.3em] rounded-sm hover:bg-white/20 transition-all flex items-center gap-3">
-                Custom Orders
-              </Link>
-              <Link href="https://wa.me/1234567890" className="px-10 py-5 bg-whatsapp text-white text-[10px] font-bold uppercase tracking-[0.3em] rounded-sm hover:scale-105 transition-all flex items-center gap-3">
-                <MessageCircle className="w-4 h-4" /> WhatsApp Us
-              </Link>
-            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="flex flex-col sm:flex-row gap-6 justify-center items-center"
+          >
+            <Link href="/products" className="px-10 py-5 bg-primary text-white font-sans text-xs font-bold uppercase tracking-[0.3em] rounded-sm hover:bg-white hover:text-black transition-all shadow-2xl">
+              {hero?.primaryBtnText || "Shop Collection"}
+            </Link>
+            <Link href="/customize" className="px-10 py-5 bg-transparent border border-white/30 text-white font-sans text-xs font-bold uppercase tracking-[0.3em] rounded-sm hover:bg-white/10 transition-all backdrop-blur-md">
+              {hero?.secondaryBtnText || "Custom Project"}
+            </Link>
           </motion.div>
         </div>
 
         {/* Bottom Stats */}
-        <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black to-transparent py-14">
+        <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black to-transparent py-16">
           <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
               { label: "Happy Clients", value: "500+" },
@@ -169,10 +191,10 @@ export default function HomePage() {
       <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-end mb-12">
           <div className="space-y-4">
-            <h2 className="text-secondary text-[10px] font-bold uppercase tracking-[0.5em]">Explore By Room</h2>
+            <h2 className="text-primary text-[10px] font-bold uppercase tracking-[0.5em]">Explore By Room</h2>
             <h3 className="font-serif text-4xl font-bold text-black tracking-tight">Our Collections</h3>
           </div>
-          <Link href="/products" className="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary hover:text-black transition-colors flex items-center gap-2">
+          <Link href="/products" className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-600 hover:text-black transition-colors flex items-center gap-2">
             View All Rooms <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
@@ -195,7 +217,7 @@ export default function HomePage() {
                 </div>
               </div>
               <h4 className="font-serif text-xl font-bold text-black">{cat.name}</h4>
-              <p className="text-[10px] text-secondary font-bold uppercase tracking-widest">{cat.count} items</p>
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{cat.count} items</p>
             </motion.div>
           ))}
         </div>
@@ -236,7 +258,7 @@ export default function HomePage() {
       {/* Process Section */}
       <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4 mb-20">
-          <h2 className="text-secondary text-[10px] font-bold uppercase tracking-[0.5em]">The Journey</h2>
+          <h2 className="text-primary text-[10px] font-bold uppercase tracking-[0.5em]">The Journey</h2>
           <h3 className="font-serif text-5xl font-bold text-black tracking-tight">How we create perfection</h3>
         </div>
 
@@ -263,7 +285,7 @@ export default function HomePage() {
               </div>
               <div className="space-y-2">
                 <h4 className="font-serif text-2xl font-bold text-black">{item.title}</h4>
-                <p className="text-secondary text-xs font-medium leading-relaxed">{item.desc}</p>
+                <p className="text-gray-600 text-xs font-medium leading-relaxed">{item.desc}</p>
               </div>
             </motion.div>
           ))}
@@ -312,7 +334,7 @@ export default function HomePage() {
                 "The custom mahogany dining table they created for us is truly a work of art. The attention to detail and the quality of finish are beyond what we expected."
               </p>
               <div>
-                <h5 className="font-bold text-lg">Vikram Singh</h5>
+                <h5 className="font-bold text-lg text-white">Vikram Singh</h5>
                 <p className="text-secondary text-xs font-bold uppercase tracking-widest">Architectural Firm CEO</p>
               </div>
             </motion.div>
@@ -383,40 +405,40 @@ export default function HomePage() {
         </div>
         <div className="bg-gray-50 p-12 lg:p-24 space-y-12">
           <div className="space-y-4">
-            <h2 className="text-secondary text-[10px] font-bold uppercase tracking-[0.5em]">Visit Our Atelier</h2>
+            <h2 className="text-primary text-[10px] font-bold uppercase tracking-[0.5em]">Visit Our Atelier</h2>
             <h3 className="font-serif text-4xl font-bold text-black tracking-tight">Come find us</h3>
           </div>
           
           <div className="space-y-8">
             <div className="flex gap-6">
-              <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center shrink-0">
                 <MapPin className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <h4 className="font-bold text-sm uppercase tracking-widest text-black">Location</h4>
-                <p className="text-secondary text-sm mt-1 font-medium italic">123 Furniture Street, Industrial Design District, <br/> Jaipur, Rajasthan 302001</p>
+                <p className="text-gray-600 text-sm mt-1 font-medium italic">{store?.address || "Nawalgarh, Rajasthan"}</p>
               </div>
             </div>
             
             <div className="flex gap-6">
-              <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center shrink-0">
                 <Phone className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <h4 className="font-bold text-sm uppercase tracking-widest text-black">Connect</h4>
-                <p className="text-secondary text-sm mt-1 font-medium">+91 141 234 5678</p>
-                <p className="text-secondary text-sm font-medium">info@furnicraft.com</p>
+                <p className="text-gray-600 text-sm mt-1 font-medium">{store?.phone || "7689044278"}</p>
+                <p className="text-gray-600 text-sm font-medium">{store?.email || "sainilalit2751@gmail.com"}</p>
               </div>
             </div>
 
             <div className="flex gap-6">
-              <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center shrink-0">
                 <Clock className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <h4 className="font-bold text-sm uppercase tracking-widest text-black">Opening Hours</h4>
-                <p className="text-secondary text-sm mt-1 font-medium">Monday - Saturday: 10:00 AM - 08:00 PM</p>
-                <p className="text-secondary text-sm font-medium italic text-red-400">Sunday: Closed</p>
+                <p className="text-gray-600 text-sm mt-1 font-medium">Monday - Saturday: 10:00 AM - 08:00 PM</p>
+                <p className="text-gray-600 text-sm font-medium italic text-red-500">Sunday: Closed</p>
               </div>
             </div>
           </div>

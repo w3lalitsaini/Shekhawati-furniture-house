@@ -1,80 +1,201 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Plus, Edit2, Trash2, X } from "lucide-react";
-
-const SAMPLE_PRODUCTS = [
-  { _id: "1", name: "The Maharaja Royal Sofa", price: 125000, stock: 5, category: "Royal Sofas", isFeatured: true },
-  { _id: "2", name: "Sheesham Jali Dining Table", price: 85000, stock: 12, category: "Dining Sets", isFeatured: true },
-  { _id: "3", name: "Heritage Carved King Bed", price: 175000, stock: 3, category: "Handcrafted Beds", isFeatured: true },
-  { _id: "4", name: "Rajwadi Armchair", price: 45000, stock: 8, category: "Home Decor", isFeatured: false },
-  { _id: "5", name: "Haveli Coffee Table", price: 32000, stock: 15, category: "Home Decor", isFeatured: false },
-  { _id: "6", name: "Palace Wardrobe", price: 95000, stock: 4, category: "Sheesham Wood", isFeatured: false },
-];
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, Edit2, Trash2, X, Search, Filter, Loader2 } from "lucide-react";
+import ProductForm from "@/components/admin/ProductForm";
 
 export default function AdminProductsPage() {
+  const [products, setProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const [prodRes, catRes] = await Promise.all([
+        fetch("/api/admin/products"),
+        fetch("/api/categories")
+      ]);
+      const [prods, cats] = await Promise.all([prodRes.json(), catRes.json()]);
+      setProducts(prods);
+      setCategories(cats);
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async (data: any) => {
+    const method = editingProduct ? "PUT" : "POST";
+    const url = editingProduct ? `/api/admin/products/${editingProduct._id}` : "/api/admin/products";
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        setShowForm(false);
+        setEditingProduct(null);
+        fetchData();
+      }
+    } catch (error) {
+      console.error("Save failed:", error);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this piece of heritage?")) return;
+
+    try {
+      const res = await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
+      if (res.ok) fetchData();
+    } catch (error) {
+      console.error("Delete failed:", error);
+    }
+  };
+
+  const filteredProducts = products.filter(p => 
+    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.category?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (loading) return (
+    <div className="h-96 flex items-center justify-center text-primary">
+      <Loader2 className="w-8 h-8 animate-spin" />
+    </div>
+  );
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="font-serif text-3xl text-[#442a22]">Products</h1>
-          <p className="font-sans text-sm text-[#5e604d] mt-1">Manage your product catalog</p>
+          <h1 className="font-serif text-3xl text-primary font-bold">Product Inventory</h1>
+          <p className="font-sans text-sm text-secondary mt-1">Manage your catalog of handcrafted Shekhawati furniture</p>
         </div>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#442a22] to-[#5d4037] text-white font-sans text-sm rounded-md hover:opacity-90 transition-opacity"
-        >
-          {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-          {showForm ? "Cancel" : "Add Product"}
-        </button>
+        {!showForm && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-linear-to-r from-primary to-accent text-white font-sans text-xs font-bold uppercase tracking-widest rounded-sm hover:ring-2 hover:ring-accent/50 transition-all shadow-lg"
+          >
+            <Plus className="w-4 h-4" />
+            Add New Piece
+          </button>
+        )}
       </div>
 
-      {showForm && (
-        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="bg-[#f5f5dc] p-6 rounded-md space-y-4">
-          <h3 className="font-serif text-lg text-[#442a22]">New Product</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input placeholder="Product Name" className="px-4 py-3 bg-white border-b-2 border-[#d4c3be]/30 rounded-t-md font-sans text-sm focus:border-[#D4AF37] focus:outline-none" />
-            <input placeholder="Price (₹)" type="number" className="px-4 py-3 bg-white border-b-2 border-[#d4c3be]/30 rounded-t-md font-sans text-sm focus:border-[#D4AF37] focus:outline-none" />
-            <input placeholder="Material" className="px-4 py-3 bg-white border-b-2 border-[#d4c3be]/30 rounded-t-md font-sans text-sm focus:border-[#D4AF37] focus:outline-none" />
-            <input placeholder="Stock" type="number" className="px-4 py-3 bg-white border-b-2 border-[#d4c3be]/30 rounded-t-md font-sans text-sm focus:border-[#D4AF37] focus:outline-none" />
+      <AnimatePresence>
+        {showForm && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+            <div className="min-h-screen py-10">
+              <ProductForm 
+                initialData={editingProduct} 
+                categories={categories}
+                onSave={handleSave}
+                onCancel={() => { setShowForm(false); setEditingProduct(null); }}
+              />
+            </div>
           </div>
-          <textarea placeholder="Description" rows={3} className="w-full px-4 py-3 bg-white border-b-2 border-[#d4c3be]/30 rounded-t-md font-sans text-sm focus:border-[#D4AF37] focus:outline-none" />
-          <button className="px-6 py-2.5 bg-[#cba72f] text-[#241a00] font-sans text-sm font-semibold rounded-md hover:opacity-90">Save Product</button>
-        </motion.div>
-      )}
+        )}
+      </AnimatePresence>
 
-      <div className="bg-[#f5f5dc] rounded-md overflow-hidden">
+      <div className="bg-surface-low rounded-lg shadow-sm border border-white/5 overflow-hidden">
+        <div className="p-4 border-b border-white/5 flex flex-col md:flex-row gap-4 items-center justify-between bg-surface-high/50">
+          <div className="relative w-full md:w-96">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary" />
+            <input 
+              type="text" 
+              placeholder="Search by name or category..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-surface-high border border-white/5 rounded-md text-sm text-white focus:outline-accent placeholder:text-secondary"
+            />
+          </div>
+          <div className="flex items-center gap-2 text-xs font-bold text-secondary uppercase tracking-widest">
+            <Filter className="w-4 h-4" />
+            Showing {filteredProducts.length} Products
+          </div>
+        </div>
+
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="text-left font-sans text-xs text-[#5e604d] uppercase tracking-wider">
-                <th className="px-6 py-3">Name</th>
-                <th className="px-6 py-3">Category</th>
-                <th className="px-6 py-3">Price</th>
-                <th className="px-6 py-3">Stock</th>
-                <th className="px-6 py-3">Featured</th>
-                <th className="px-6 py-3">Actions</th>
+              <tr className="text-left bg-surface-high border-b border-white/5 text-[10px] font-bold text-secondary uppercase tracking-[0.2em]">
+                <th className="px-6 py-4">Piece Details</th>
+                <th className="px-6 py-4">Price / Stock</th>
+                <th className="px-6 py-4">Category</th>
+                <th className="px-6 py-4">Visuals</th>
+                <th className="px-6 py-4 text-center">Settings</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {SAMPLE_PRODUCTS.map((p) => (
-                <tr key={p._id} className="border-t border-[#d4c3be]/10 font-sans text-sm">
-                  <td className="px-6 py-4 text-[#442a22] font-semibold">{p.name}</td>
-                  <td className="px-6 py-4 text-[#5e604d]">{p.category}</td>
-                  <td className="px-6 py-4 text-[#735c00] font-semibold">₹{p.price.toLocaleString("en-IN")}</td>
+            <tbody className="divide-y divide-white/5">
+              {filteredProducts.map((p) => (
+                <tr key={p._id} className="group hover:bg-surface-high/30 transition-colors">
                   <td className="px-6 py-4">
-                    <span className={`font-semibold ${p.stock < 5 ? "text-red-500" : "text-green-600"}`}>{p.stock}</span>
+                    <div className="space-y-1">
+                      <div className="font-serif font-bold text-white group-hover:text-primary transition-colors">{p.name}</div>
+                      <div className="text-[10px] text-secondary font-bold uppercase tracking-tight line-clamp-1">{p.material || "Genuine Sheesham Wood"}</div>
+                    </div>
                   </td>
                   <td className="px-6 py-4">
-                    {p.isFeatured && <span className="px-2 py-1 bg-[#D4AF37]/20 text-[#735c00] text-xs rounded">Featured</span>}
+                    <div className="space-y-1">
+                      <div className="font-bold text-white">₹{p.price.toLocaleString("en-IN")}</div>
+                      <div className={`text-[10px] font-bold uppercase ${p.stock < 5 ? "text-red-400" : "text-green-500"}`}>
+                        {p.stock} Units left
+                      </div>
+                    </div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex gap-2">
-                      <button className="p-1.5 hover:bg-[#e4e4cc] rounded"><Edit2 className="w-4 h-4 text-[#442a22]" strokeWidth={1.5} /></button>
-                      <button className="p-1.5 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4 text-red-400" strokeWidth={1.5} /></button>
+                    <span className="px-3 py-1 bg-white/5 text-secondary rounded-full text-[10px] font-bold uppercase tracking-widest border border-white/10">
+                      {p.category?.name || "Uncategorized"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex -space-x-3 overflow-hidden">
+                      {p.images.slice(0, 3).map((img: string, i: number) => (
+                        <div key={i} className="inline-block h-8 w-8 rounded-full ring-2 ring-surface overflow-hidden bg-surface-high">
+                          <img src={img} alt="" className="h-full w-full object-cover" />
+                        </div>
+                      ))}
+                      {p.images.length > 3 && (
+                        <div className="flex items-center justify-center h-8 w-8 rounded-full ring-2 ring-surface bg-surface-high text-[10px] font-bold text-secondary">
+                          +{p.images.length - 3}
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center justify-center gap-2">
+                       {p.isFeatured && <span className="w-2 h-2 rounded-full bg-accent" title="Featured" />}
+                       {p.isNewItem && <span className="w-2 h-2 rounded-full bg-blue-400" title="New Arrival" />}
+                       {p.isCustom && <span className="w-2 h-2 rounded-full bg-purple-400" title="Custom Piece" />}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button 
+                        onClick={() => { setEditingProduct(p); setShowForm(true); }}
+                        className="p-2 hover:bg-white/5 hover:shadow-md rounded-full text-secondary hover:text-primary transition-all"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(p._id)}
+                        className="p-2 hover:bg-white/5 hover:shadow-md rounded-full text-secondary hover:text-red-500 transition-all"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </td>
                 </tr>

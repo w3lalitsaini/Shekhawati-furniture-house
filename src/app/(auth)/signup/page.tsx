@@ -36,14 +36,14 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fbfbe2] flex">
+    <div className="min-h-screen bg-surface flex text-on-surface">
       {/* Left: Art panel */}
-      <div className="hidden lg:flex flex-1 relative items-center justify-center bg-gradient-to-br from-[#442a22] to-[#5d4037]">
+      <div className="hidden lg:flex flex-1 relative items-center justify-center bg-linear-to-br from-primary to-primary-container">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=1200&h=900&fit=crop')] bg-cover bg-center mix-blend-overlay opacity-30" />
         <div className="relative z-10 text-center px-12 space-y-6">
           <h2 className="font-serif text-5xl text-white leading-tight">Join the<br />Heritage</h2>
-          <div className="h-1 w-16 bg-[#D4AF37] mx-auto" />
-          <p className="font-sans text-[#e7bdb1] text-lg max-w-sm mx-auto">Begin your journey with royal Rajasthani craftsmanship</p>
+          <div className="h-1 w-16 bg-accent mx-auto" />
+          <p className="font-sans text-secondary text-lg max-w-sm mx-auto tracking-wide">Begin your journey with royal Rajasthani craftsmanship</p>
         </div>
       </div>
 
@@ -56,9 +56,9 @@ export default function SignupPage() {
         >
           <div className="text-center lg:text-left space-y-2">
             <Link href="/" className="inline-block">
-              <h1 className="font-serif text-2xl text-[#442a22]">Shekhawati Furniture House</h1>
+              <h1 className="font-serif text-2xl text-primary">Shekhawati Furniture House</h1>
             </Link>
-            <p className="font-sans text-sm text-[#5e604d]">Create your account</p>
+            <p className="font-sans text-sm text-secondary">Create your account</p>
           </div>
 
           {error && (
@@ -67,29 +67,29 @@ export default function SignupPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label className="font-sans text-sm font-medium text-[#442a22]">Full Name</label>
+              <label className="font-sans text-sm font-medium text-primary">Full Name</label>
               <input
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 required
-                className="w-full px-4 py-3 bg-[#f5f5dc] border-b-2 border-[#d4c3be]/30 rounded-t-md font-sans text-sm text-[#1b1d0e] focus:border-[#D4AF37] focus:outline-none transition-colors placeholder:text-[#827470]"
+                className="w-full px-4 py-3 bg-surface-low border-b-2 border-white/10 rounded-t-md font-sans text-sm text-white focus:border-accent focus:outline-none transition-colors placeholder:text-secondary"
                 placeholder="Your full name"
               />
             </div>
             <div className="space-y-2">
-              <label className="font-sans text-sm font-medium text-[#442a22]">Email</label>
+              <label className="font-sans text-sm font-medium text-primary">Email</label>
               <input
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 required
-                className="w-full px-4 py-3 bg-[#f5f5dc] border-b-2 border-[#d4c3be]/30 rounded-t-md font-sans text-sm text-[#1b1d0e] focus:border-[#D4AF37] focus:outline-none transition-colors placeholder:text-[#827470]"
+                className="w-full px-4 py-3 bg-surface-low border-b-2 border-white/10 rounded-t-md font-sans text-sm text-white focus:border-accent focus:outline-none transition-colors placeholder:text-secondary"
                 placeholder="you@example.com"
               />
             </div>
             <div className="space-y-2">
-              <label className="font-sans text-sm font-medium text-[#442a22]">Password</label>
+              <label className="font-sans text-sm font-medium text-primary">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -97,10 +97,10 @@ export default function SignupPage() {
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
                   required
                   minLength={6}
-                  className="w-full px-4 py-3 bg-[#f5f5dc] border-b-2 border-[#d4c3be]/30 rounded-t-md font-sans text-sm text-[#1b1d0e] focus:border-[#D4AF37] focus:outline-none transition-colors placeholder:text-[#827470]"
+                  className="w-full px-4 py-3 bg-surface-low border-b-2 border-white/10 rounded-t-md font-sans text-sm text-white focus:border-accent focus:outline-none transition-colors placeholder:text-secondary"
                   placeholder="Min. 6 characters"
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#827470]">
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary">
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
@@ -108,15 +108,15 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-gradient-to-r from-[#442a22] to-[#5d4037] text-white font-sans text-sm font-semibold rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="w-full py-3.5 bg-linear-to-r from-primary to-primary-container text-white font-sans text-sm font-semibold rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {loading ? "Creating Account..." : "Create Account"}
             </button>
           </form>
 
-          <p className="text-center font-sans text-sm text-[#5e604d]">
+          <p className="text-center font-sans text-sm text-secondary">
             Already have an account?{" "}
-            <Link href="/login" className="text-[#735c00] font-semibold hover:underline">Sign In</Link>
+            <Link href="/login" className="text-primary font-semibold hover:underline">Sign In</Link>
           </p>
         </motion.div>
       </div>

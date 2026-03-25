@@ -14,15 +14,15 @@ export default function AdminUsersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-3xl text-[#442a22]">Users</h1>
-        <p className="font-sans text-sm text-[#5e604d] mt-1">View and manage user accounts</p>
+        <h1 className="font-serif text-3xl text-primary font-bold">Users</h1>
+        <p className="font-sans text-sm text-secondary mt-1">View and manage user accounts</p>
       </div>
 
-      <div className="bg-[#f5f5dc] rounded-md overflow-hidden">
+      <div className="bg-surface-low rounded-md overflow-hidden border border-white/5">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="text-left font-sans text-xs text-[#5e604d] uppercase tracking-wider">
+              <tr className="text-left font-sans text-xs text-secondary uppercase tracking-wider font-bold">
                 <th className="px-6 py-3">Name</th>
                 <th className="px-6 py-3">Email</th>
                 <th className="px-6 py-3">Role</th>
@@ -36,25 +36,25 @@ export default function AdminUsersPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: i * 0.05 }}
-                  className="border-t border-[#d4c3be]/10 font-sans text-sm"
+                  className="border-t border-white/5 font-sans text-sm"
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#442a22] flex items-center justify-center text-white text-sm font-medium">
+                      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-sm font-bold">
                         {user.name[0]}
                       </div>
-                      <span className="text-[#1b1d0e] font-medium">{user.name}</span>
+                      <span className="text-white font-bold">{user.name}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-[#5e604d]">{user.email}</td>
+                  <td className="px-6 py-4 text-secondary">{user.email}</td>
                   <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      user.role === "admin" ? "bg-[#D4AF37]/20 text-[#735c00]" : "bg-[#e4e4cc] text-[#5e604d]"
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                      user.role === "admin" ? "bg-accent/20 text-accent" : "bg-white/10 text-secondary"
                     }`}>
                       {user.role}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-[#5e604d]">{user.createdAt}</td>
+                  <td className="px-6 py-4 text-secondary">{user.createdAt}</td>
                 </motion.tr>
               ))}
             </tbody>

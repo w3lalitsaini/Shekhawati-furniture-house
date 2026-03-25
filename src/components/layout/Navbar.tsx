@@ -5,10 +5,12 @@ import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { ShoppingBag, Heart, Menu, X, Search, User, LayoutDashboard, LogOut } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
+import { useStore } from "@/context/StoreContext";
 
 export default function Navbar() {
   const { data: session } = useSession();
   const { totalItems } = useCart();
+  const { settings, loading } = useStore();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -38,12 +40,18 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 bg-[#b87333] flex items-center justify-center rounded-sm transition-transform group-hover:scale-105">
-              <span className="text-white font-serif text-2xl font-bold">F</span>
+            <div className="w-10 h-10 bg-primary flex items-center justify-center rounded-sm transition-transform group-hover:scale-105">
+              <span className="text-white font-serif text-2xl font-bold">
+                {settings?.seo.title.charAt(0) || "S"}
+              </span>
             </div>
             <div className="flex flex-col">
-              <span className="font-serif text-xl font-bold text-white tracking-tight leading-none">FurniCraft</span>
-              <span className="text-[10px] text-[#a0a0a0] uppercase tracking-[0.2em] mt-0.5">Premium Furniture</span>
+              <span className="font-serif text-xl font-bold text-white tracking-tight leading-none">
+                {settings?.seo.title.split(" ").slice(0, 2).join(" ") || "Shekhawati"}
+              </span>
+              <span className="text-[10px] text-secondary uppercase tracking-[0.2em] mt-0.5">
+                {settings?.seo.title.split(" ").slice(2).join(" ") || "Furniture House"}
+              </span>
             </div>
           </Link>
 
@@ -53,7 +61,7 @@ export default function Navbar() {
               <Link 
                 key={link.name} 
                 href={link.href}
-                className="text-sm font-medium text-[#a0a0a0] hover:text-white transition-colors"
+                className="text-sm font-medium text-secondary hover:text-white transition-colors"
               >
                 {link.name}
               </Link>
@@ -62,16 +70,16 @@ export default function Navbar() {
 
           {/* Actions */}
           <div className="flex items-center gap-5">
-            <button className="text-[#a0a0a0] hover:text-white transition-colors">
+            <button className="text-secondary hover:text-white transition-colors">
               <Search className="w-5 h-5" strokeWidth={1.5} />
             </button>
-            <Link href="/wishlist" className="text-[#a0a0a0] hover:text-white transition-colors hidden sm:block">
+            <Link href="/wishlist" className="text-secondary hover:text-white transition-colors hidden sm:block">
               <Heart className="w-5 h-5" strokeWidth={1.5} />
             </Link>
-            <Link href="/cart" className="relative group text-[#a0a0a0] hover:text-white transition-colors">
+            <Link href="/cart" className="relative group text-secondary hover:text-white transition-colors">
               <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
               {totalItems > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-[#b87333] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                <span className="absolute -top-1.5 -right-1.5 bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                   {totalItems}
                 </span>
               )}
@@ -80,13 +88,13 @@ export default function Navbar() {
             {session?.user ? (
               <div className="flex items-center gap-4">
                 {(session.user as any).role === "admin" && (
-                  <Link href="/admin/dashboard" className="text-[#b87333] hover:text-[#a67c00] transition-colors">
+                  <Link href="/admin/dashboard" className="text-primary hover:text-accent transition-colors">
                     <LayoutDashboard className="w-5 h-5" strokeWidth={1.5} />
                   </Link>
                 )}
                 <button
                   onClick={() => signOut()}
-                  className="text-[#a0a0a0] hover:text-white transition-colors"
+                  className="text-secondary hover:text-white transition-colors"
                 >
                   <LogOut className="w-5 h-5" strokeWidth={1.5} />
                 </button>
@@ -94,7 +102,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="px-6 py-2 bg-[#b87333] text-white text-sm font-bold rounded-sm hover:bg-[#a67c00] transition-colors"
+                className="px-6 py-2 bg-primary text-white text-sm font-bold rounded-sm hover:bg-accent transition-colors"
               >
                 Login
               </Link>
@@ -117,7 +125,7 @@ export default function Navbar() {
               <Link 
                 key={link.name} 
                 href={link.href}
-                className="block text-lg text-[#a0a0a0] hover:text-white"
+                className="block text-lg text-secondary hover:text-white"
                 onClick={() => setMobileOpen(false)}
               >
                 {link.name}
@@ -126,7 +134,7 @@ export default function Navbar() {
             {!session?.user && (
               <Link 
                 href="/login" 
-                className="block py-3 bg-[#b87333] text-white text-center rounded-sm"
+                className="block py-3 bg-primary text-white text-center rounded-sm"
                 onClick={() => setMobileOpen(false)}
               >
                 Login

@@ -22,15 +22,15 @@ export default function AdminOrdersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-3xl text-[#442a22]">Orders</h1>
-        <p className="font-sans text-sm text-[#5e604d] mt-1">Manage and track customer orders</p>
+        <h1 className="font-serif text-3xl text-primary font-bold">Orders</h1>
+        <p className="font-sans text-sm text-secondary mt-1">Manage and track customer orders</p>
       </div>
 
-      <div className="bg-[#f5f5dc] rounded-md overflow-hidden">
+      <div className="bg-surface-low rounded-md overflow-hidden border border-white/5">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="text-left font-sans text-xs text-[#5e604d] uppercase tracking-wider">
+              <tr className="text-left font-sans text-xs text-secondary uppercase tracking-wider">
                 <th className="px-6 py-3">Order ID</th>
                 <th className="px-6 py-3">Customer</th>
                 <th className="px-6 py-3">Items</th>
@@ -47,21 +47,21 @@ export default function AdminOrdersPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: i * 0.05 }}
-                  className="border-t border-[#d4c3be]/10 font-sans text-sm"
+                  className="border-t border-white/5 font-sans text-sm"
                 >
-                  <td className="px-6 py-4 text-[#442a22] font-semibold">{order.id}</td>
+                  <td className="px-6 py-4 text-primary font-bold">{order.id}</td>
                   <td className="px-6 py-4">
-                    <p className="text-[#1b1d0e]">{order.customer}</p>
-                    <p className="text-xs text-[#827470]">{order.email}</p>
+                    <p className="text-white">{order.customer}</p>
+                    <p className="text-xs text-secondary">{order.email}</p>
                   </td>
-                  <td className="px-6 py-4 text-[#5e604d]">{order.items}</td>
-                  <td className="px-6 py-4 text-[#735c00] font-semibold">₹{order.amount.toLocaleString("en-IN")}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[order.status]}`}>{order.status}</span>
+                  <td className="px-6 py-4 text-secondary">{order.items}</td>
+                  <td className="px-6 py-4 text-accent font-bold">₹{order.amount.toLocaleString("en-IN")}</td>
+                  <td className="px-6 py-4 font-bold">
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${STATUS_COLORS[order.status]}`}>{order.status}</span>
                   </td>
-                  <td className="px-6 py-4 text-[#5e604d]">{order.date}</td>
+                  <td className="px-6 py-4 text-secondary">{order.date}</td>
                   <td className="px-6 py-4">
-                    <select className="bg-white border border-[#d4c3be]/30 rounded px-2 py-1 font-sans text-xs focus:border-[#D4AF37] focus:outline-none">
+                    <select className="bg-surface-high border border-white/10 rounded px-2 py-1 font-sans text-xs text-white focus:border-accent focus:outline-none">
                       <option>Pending</option>
                       <option>Processing</option>
                       <option>Shipped</option>

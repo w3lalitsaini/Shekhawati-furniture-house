@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { Phone, Mail, MapPin, Camera, Globe, MessageCircle, Send } from "lucide-react";
+import { useStore } from "@/context/StoreContext";
 
 export default function Footer() {
+  const { settings } = useStore();
   return (
     <footer className="bg-surface text-secondary pt-20 pb-10 border-t border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -10,9 +14,13 @@ export default function Footer() {
           <div className="lg:col-span-1 space-y-6">
             <Link href="/" className="flex items-center gap-2">
               <div className="w-8 h-8 bg-primary flex items-center justify-center rounded-sm">
-                <span className="text-white font-serif text-lg font-bold">F</span>
+                <span className="text-white font-serif text-lg font-bold">
+                  {settings?.seo.title.charAt(0) || "S"}
+                </span>
               </div>
-              <span className="font-serif text-xl font-bold text-white tracking-tight">FurniCraft</span>
+              <span className="font-serif text-xl font-bold text-white tracking-tight">
+                {settings?.seo.title || "Shekhawati Furniture House"}
+              </span>
             </Link>
             <p className="text-sm leading-relaxed">
               Premium furniture & aluminum work for modern homes. Custom designs, professional installation, and quality craftsmanship.
@@ -66,19 +74,21 @@ export default function Footer() {
             <ul className="space-y-4 text-sm">
               <li className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-primary" />
-                <span>+1 (234) 567-890</span>
+                <span>{settings?.phone || "7689044278"}</span>
               </li>
               <li className="flex items-center gap-3">
-                <span className="text-primary">W</span>
-                <span>WhatsApp Us</span>
+                <span className="text-primary font-bold">W</span>
+                <a href={`https://wa.me/${settings?.socialLinks.whatsapp || "7689044278"}`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  WhatsApp Us
+                </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-primary" />
-                <span>info@furnicraft.com</span>
+                <span>{settings?.email || "sainilalit2751@gmail.com"}</span>
               </li>
               <li className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-primary mt-1" />
-                <span>123 Furniture Street, Design District, NY 10001</span>
+                <MapPin className="w-4 h-4 text-primary mt-1 shrink-0" />
+                <span>{settings?.address || "Nawalgarh, Rajasthan"}</span>
               </li>
             </ul>
           </div>
@@ -106,18 +116,18 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs tracking-wider uppercase">
-          <p>© {new Date().getFullYear()} FurniCraft. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {settings?.seo.title || "Shekhawati Furniture House"}. All rights reserved.</p>
           <div className="flex gap-6">
             <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
           </div>
-          <p>Premium Furniture & Aluminum Works</p>
+          <p>Premium Handcrafted Furniture</p>
         </div>
       </div>
 
       {/* WhatsApp Floating Button */}
       <a 
-        href="https://wa.me/1234567890" 
+        href={`https://wa.me/${settings?.socialLinks.whatsapp || "7689044278"}`} 
         target="_blank" 
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 w-14 h-14 bg-whatsapp text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform z-50 group"

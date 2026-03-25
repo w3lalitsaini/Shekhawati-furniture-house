@@ -36,9 +36,9 @@ export default function GalleryPage() {
     <div className="min-h-screen bg-white">
       <Navbar />
       
-      <main className="pt-20">
+      <main>
         {/* Hero Section */}
-        <section className="bg-surface py-24 text-center">
+        <section className="bg-surface py-10 text-center">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
