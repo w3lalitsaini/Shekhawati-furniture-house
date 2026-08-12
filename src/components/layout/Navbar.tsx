@@ -3,16 +3,17 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
-import { ShoppingBag, Heart, Menu, X, Search, User, LayoutDashboard, LogOut } from "lucide-react";
+import { ShoppingBag, Heart, Menu, X, Search, User, LayoutDashboard, LogOut, ChevronDown, ChevronRight } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { useStore } from "@/context/StoreContext";
 
 export default function Navbar() {
   const { data: session } = useSession();
   const { totalItems } = useCart();
-  const { settings, loading } = useStore();
+  const { settings, categories, loading } = useStore();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [productsHover, setProductsHover] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -22,7 +23,7 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Products", href: "/products" },
+    { name: "Products", href: "/products", hasDropdown: true },
     { name: "Custom Furniture", href: "/custom" },
     { name: "Gallery", href: "/gallery" },
     { name: "Blog", href: "/blog" },
@@ -58,13 +59,46 @@ export default function Navbar() {
           {/* Desktop Links - Centered */}
           <div className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
-              <Link 
-                key={link.name} 
-                href={link.href}
-                className="text-sm font-medium text-secondary hover:text-white transition-colors"
+              <div 
+                key={link.name}
+                className="relative"
+                onMouseEnter={() => link.hasDropdown && setProductsHover(true)}
+                onMouseLeave={() => link.hasDropdown && setProductsHover(false)}
               >
-                {link.name}
-              </Link>
+                <Link 
+                  href={link.href}
+                  className="text-sm font-medium text-secondary hover:text-white transition-colors py-2 flex items-center gap-1"
+                >
+                  {link.name}
+                  {link.hasDropdown && <ChevronDown className={`w-3 h-3 transition-transform ${productsHover ? 'rotate-180' : ''}`} />}
+                </Link>
+
+                {/* Dropdown menu */}
+                {link.hasDropdown && productsHover && (
+                  <div className="absolute top-full left-0 w-64 bg-black/95 backdrop-blur-xl border border-white/10 rounded-sm shadow-2xl py-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="px-4 mb-3 border-b border-white/5 pb-2">
+                       <p className="text-[10px] font-bold text-primary uppercase tracking-[0.2em]">Shop by Category</p>
+                    </div>
+                    {categories.length > 0 ? (
+                      <div className="grid grid-cols-1 gap-1">
+                        {categories.map((cat: any) => (
+                          <Link 
+                            key={cat._id} 
+                            href={`/products?category=${cat.slug || cat._id}`}
+                            className="px-4 py-2 hover:bg-white/5 text-sm text-secondary hover:text-white transition-colors flex items-center justify-between group"
+                            onClick={() => setProductsHover(false)}
+                          >
+                            <span>{cat.name}</span>
+                            <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </Link>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="px-4 text-xs text-secondary py-2 italic font-sans uppercase">No categories found</p>
+                    )}
+                  </div>
+                )}
+              </div>
             ))}
           </div>
 
@@ -122,14 +156,29 @@ export default function Navbar() {
         {mobileOpen && (
           <div className="lg:hidden bg-black border-t border-white/5 py-6 space-y-4 absolute left-0 right-0 top-full px-4 shadow-xl">
             {navLinks.map((link) => (
-              <Link 
-                key={link.name} 
-                href={link.href}
-                className="block text-lg text-secondary hover:text-white"
-                onClick={() => setMobileOpen(false)}
-              >
-                {link.name}
-              </Link>
+              <div key={link.name} className="space-y-4">
+                <Link 
+                  href={link.href}
+                  className="block text-lg text-secondary hover:text-white"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {link.name}
+                </Link>
+                {link.hasDropdown && categories.length > 0 && (
+                  <div className="pl-4 grid grid-cols-2 gap-4">
+                    {categories.map((cat: any) => (
+                      <Link 
+                        key={cat._id} 
+                        href={`/products?category=${cat.slug || cat._id}`}
+                        className="text-sm text-secondary hover:text-primary transition-colors py-1"
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        {cat.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
             {!session?.user && (
               <Link 

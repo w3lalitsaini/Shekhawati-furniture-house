@@ -1,13 +1,13 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/store/ProductCard";
 import { useCart } from "@/hooks/useCart";
 import { motion } from "framer-motion";
-import { Search, ChevronDown, SlidersHorizontal, ArrowRight } from "lucide-react";
+import { Search, ChevronDown, SlidersHorizontal, ArrowRight, Loader2, Filter } from "lucide-react";
 import Link from "next/link";
 
 interface Product {
@@ -15,27 +15,16 @@ interface Product {
   name: string;
   price: number;
   images: string[];
-  category: string;
+  category: {
+    _id: string;
+    name: string;
+  } | string;
   material: string;
   rating: number;
-  isNew?: boolean;
+  isNewItem?: boolean;
+  isFeatured?: boolean;
   isCustom?: boolean;
 }
-
-const SAMPLE_PRODUCTS: Product[] = [
-  { _id: "1", name: "Modern Sofa", price: 1200, images: ["https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=800&fit=crop"], category: "Sofas", material: "Solid Wood", isNew: true, rating: 5 },
-  { _id: "2", name: "King Bed", price: 850, images: ["https://images.unsplash.com/photo-1505671811165-0200670594d3?w=600&h=800&fit=crop"], category: "Beds", material: "Engineered Wood", isNew: true, rating: 5 },
-  { _id: "3", name: "Dining Table", price: 950, images: ["https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&h=800&fit=crop"], category: "Dining", material: "Teak Wood", isNew: true, rating: 4 },
-  { _id: "4", name: "Wardrobe", price: 1100, images: ["https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=600&h=800&fit=crop"], category: "Wardrobes", material: "MDF", isNew: true, isCustom: true, rating: 5 },
-  { _id: "5", name: "TV Unit", price: 450, images: ["https://images.unsplash.com/photo-1594026112284-02bb6f3352fe?w=600&h=800&fit=crop"], category: "TV Units", material: "Particle Board", rating: 4 },
-  { _id: "6", name: "Office Desk", price: 680, images: ["https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&h=800&fit=crop"], category: "Office", material: "Metal & Wood", rating: 5 },
-  { _id: "7", name: "Aluminum Door", price: 1500, images: ["https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&h=800&fit=crop"], category: "Aluminum", material: "Aluminum", isCustom: true, rating: 4 },
-  { _id: "8", name: "Kitchen Cabinet", price: 2200, images: ["https://images.unsplash.com/photo-1556912177-c54030639a09?w=600&h=800&fit=crop"], category: "Kitchen", material: "Plywood", rating: 5 },
-  { _id: "9", name: "Coffee Table", price: 320, images: ["https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=600&h=800&fit=crop"], category: "Tables", material: "Glass & Wood", rating: 5 },
-  { _id: "10", name: "Bookshelf", price: 480, images: ["https://images.unsplash.com/photo-1594620302200-9a762244a156?w=600&h=800&fit=crop"], category: "Storage", material: "Solid Wood", isCustom: true, rating: 4 },
-  { _id: "11", name: "Study Table", price: 560, images: ["https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&h=800&fit=crop"], category: "Office", material: "Metal", rating: 5 },
-  { _id: "12", name: "Side Table", price: 280, images: ["https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=600&h=800&fit=crop"], category: "Tables", material: "Wood", rating: 4 },
-];
 
 export default function ProductsPage() {
   return (
@@ -48,13 +37,64 @@ export default function ProductsPage() {
 function ProductsContent() {
   const searchParams = useSearchParams();
   const { addItem } = useCart();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<string[]>(["All Categories"]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("Newest");
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
 
-  const filteredProducts = SAMPLE_PRODUCTS.filter((p) => 
-    p.name.toLowerCase().includes(search.toLowerCase()) || 
-    p.category.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const res = await fetch("/api/products");
+        if (res.ok) {
+          const data = await res.json();
+          let prods: Product[] = [];
+          if (Array.isArray(data)) {
+            prods = data;
+          } else if (data.data && Array.isArray(data.data)) {
+            prods = data.data;
+          } else {
+            console.error("Unexpected products format:", data);
+          }
+          setProducts(prods);
+
+          // Extract unique categories for dropdown
+          const uniqueCats = Array.from(new Set(prods.map(p => getCategoryName(p.category))));
+          setCategories(["All Categories", ...uniqueCats]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
+
+  const getCategoryName = (cat: any) => {
+    if (!cat) return "Uncategorized";
+    if (typeof cat === 'object') return cat.name || "Uncategorized";
+    return cat;
+  };
+
+  const filteredProducts = products
+    .filter((p) => {
+      const catName = getCategoryName(p.category);
+      // Category filter
+      if (selectedCategory !== "All Categories" && catName !== selectedCategory) return false;
+      
+      // Search filter
+      const s = search.toLowerCase();
+      return p.name.toLowerCase().includes(s) || catName.toLowerCase().includes(s);
+    })
+    .sort((a, b) => {
+      if (sortBy === "Price Low-High") return a.price - b.price;
+      if (sortBy === "Price High-Low") return b.price - a.price;
+      // Default to Newest (we assume order from API or `CreatedAt`)
+      return 0;
+    });
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -78,73 +118,93 @@ function ProductsContent() {
         {/* Filter Bar */}
         <section className="py-8 bg-white border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+            <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
               {/* Search Bar */}
-              <div className="relative w-full md:max-w-xl">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary" />
+              <div className="relative w-full lg:max-w-md">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary pointer-events-none" />
                 <input 
                   type="text" 
                   placeholder="Search products..." 
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full bg-gray-50 border border-transparent focus:border-primary/20 rounded-sm pl-12 pr-4 py-3 text-sm focus:outline-none transition-all font-medium"
+                  className="w-full bg-gray-50 border border-transparent focus:border-primary/20 rounded-sm pl-12 pr-4 py-3 text-sm focus:outline-none transition-all font-medium text-black"
                 />
               </div>
 
               {/* Controls */}
-              <div className="flex items-center gap-4 w-full md:w-auto">
-                <div className="relative w-full md:w-[180px]">
+              <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
+                <div className="relative w-full sm:w-[220px]">
+                  <select 
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="w-full appearance-none bg-white border border-gray-200 rounded-sm px-4 py-3 text-sm font-bold tracking-tight text-black focus:outline-none cursor-pointer pr-10 hover:border-black transition-colors"
+                  >
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                  <Filter className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary pointer-events-none" />
+                </div>
+
+                <div className="relative w-full sm:w-[180px]">
                   <select 
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full appearance-none bg-white border border-gray-200 rounded-sm px-4 py-3 text-sm font-bold tracking-tight focus:outline-none cursor-pointer pr-10 hover:border-black transition-colors"
+                    className="w-full appearance-none bg-white border border-gray-200 rounded-sm px-4 py-3 text-sm font-bold tracking-tight text-black focus:outline-none cursor-pointer pr-10 hover:border-black transition-colors"
                   >
                     <option>Sort: Newest</option>
                     <option>Sort: Price Low-High</option>
                     <option>Sort: Price High-Low</option>
-                    <option>Sort: Popularity</option>
                   </select>
                   <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary pointer-events-none" />
                 </div>
-
-                <button className="flex items-center justify-center gap-2 px-6 py-3 border border-gray-200 rounded-sm hover:border-black transition-all text-sm font-bold tracking-tight w-full md:w-auto">
-                  <SlidersHorizontal className="w-4 h-4" />
-                  Filters
-                </button>
               </div>
             </div>
 
             {/* Stats */}
             <div className="mt-8 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">
-              <p>{filteredProducts.length} products found</p>
+              <p>{loading ? "Loading..." : `${filteredProducts.length} products found`}</p>
             </div>
           </div>
         </section>
 
         {/* Product Grid */}
-        <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {filteredProducts.map((p, i) => (
-              <ProductCard
-                key={p._id}
-                id={p._id}
-                name={p.name}
-                price={p.price}
-                image={p.images[0]}
-                category={p.category}
-                material={p.material}
-                rating={p.rating}
-                isNew={p.isNew}
-                isCustom={p.isCustom}
-                onAddToCart={() => addItem({ productId: p._id, name: p.name, price: p.price, image: p.images[0] })}
-              />
-            ))}
-          </div>
+        <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[500px]">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center h-full space-y-4 pt-20">
+              <Loader2 className="w-10 h-10 text-primary animate-spin" />
+              <p className="text-[10px] font-bold uppercase tracking-widest text-secondary">Fetching Collection...</p>
+            </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="text-center py-20">
+              <h3 className="text-2xl font-serif text-black mb-2">No masterpieces found</h3>
+              <p className="text-gray-500">Try adjusting your search or category filter to see what we have in store.</p>
+              <button onClick={() => { setSearch(""); setSelectedCategory("All Categories"); }} className="mt-6 px-6 py-2 bg-black text-white text-[10px] font-bold uppercase tracking-widest hover:bg-primary transition-colors">Clear Filters</button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
+              {filteredProducts.map((p) => (
+                <ProductCard
+                  key={p._id}
+                  id={p._id}
+                  name={p.name}
+                  price={p.price}
+                  image={p.images?.[0] || "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=800&fit=crop"}
+                  category={getCategoryName(p.category)}
+                  material={p.material || "Premium Quality"}
+                  rating={5}
+                  isNew={p.isNewItem}
+                  isCustom={p.isCustom}
+                  onAddToCart={() => addItem({ productId: p._id, name: p.name, price: p.price, image: p.images?.[0] || "" })}
+                />
+              ))}
+            </div>
+          )}
 
           {/* Pagination */}
-          {filteredProducts.length > 0 && (
+          {!loading && filteredProducts.length > 0 && (
             <div className="mt-24 flex justify-center items-center gap-3">
-              {[1, 2, 3].map(page => (
+              {[1].map(page => (
                 <button 
                   key={page}
                   className={`w-12 h-12 flex items-center justify-center font-bold text-xs border ${page === 1 ? "bg-black text-white border-black shadow-xl" : "bg-white text-secondary border-gray-100 hover:border-black hover:text-black"} transition-all duration-300`}
@@ -152,9 +212,6 @@ function ProductsContent() {
                   {page}
                 </button>
               ))}
-              <button className="w-12 h-12 flex items-center justify-center text-secondary border border-gray-100 hover:border-black hover:text-black transition-all duration-300">
-                <ArrowRight className="w-4 h-4" />
-              </button>
             </div>
           )}
         </section>

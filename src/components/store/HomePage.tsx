@@ -31,21 +31,6 @@ import Link from "next/link";
 import { useState, useRef } from "react";
 import ProductCard from "./ProductCard";
 
-const CATEGORIES = [
-  { name: "Living Room", image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=400", count: 24 },
-  { name: "Bedroom", image: "https://images.unsplash.com/photo-1505691938895-1758d7eaa511?auto=format&fit=crop&q=80&w=400", count: 18 },
-  { name: "Dining Room", image: "https://images.unsplash.com/photo-1524758631624-624a10e4708a?auto=format&fit=crop&q=80&w=400", count: 12 },
-  { name: "Office", image: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=400", count: 9 },
-  { name: "Aluminum", image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=80&w=400", count: 15 },
-];
-
-const BEST_SELLERS = [
-  { id: 1, name: "Modern Sofa", price: 1200, category: "Living Room", rating: 5, reviews: 48, image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=800", isNew: true },
-  { id: 2, name: "Dining Table", price: 850, category: "Dining", rating: 4, reviews: 32, image: "https://images.unsplash.com/photo-1524758631624-624a10e4708a?auto=format&fit=crop&q=80&w=800", isCustom: true },
-  { id: 3, name: "King Bed", price: 1500, category: "Bedroom", rating: 5, reviews: 29, image: "https://images.unsplash.com/photo-1505671811165-0200670594d3?auto=format&fit=crop&q=80&w=800", isNew: true },
-  { id: 4, name: "Office Desk", price: 450, category: "Office", rating: 4, reviews: 15, image: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=800" },
-];
-
 const floatingAnimation = (delay = 0) => ({
   y: [0, -40, 0],
   rotate: [0, 5, -5, 0],
@@ -75,9 +60,11 @@ interface HomePageProps {
       address: string;
     };
   };
+  categories?: any[];
+  featuredProducts?: any[];
 }
 
-export default function HomePage({ initialSettings }: HomePageProps) {
+export default function HomePage({ initialSettings, categories = [], featuredProducts = [] }: HomePageProps) {
   const containerRef = useRef(null);
   const hero = initialSettings?.home?.hero;
   const store = initialSettings?.store;
@@ -200,9 +187,9 @@ export default function HomePage({ initialSettings }: HomePageProps) {
         </div>
         
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
-          {CATEGORIES.map((cat, i) => (
+          {categories.map((cat, i) => (
             <motion.div 
-              key={cat.name}
+              key={cat._id || cat.name}
               whileHover={{ y: -10 }}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -232,7 +219,7 @@ export default function HomePage({ initialSettings }: HomePageProps) {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {BEST_SELLERS.map((product, i) => (
+            {featuredProducts.map((product, i) => (
               <ProductCard 
                 key={product.id} 
                 id={product.id.toString()} 
